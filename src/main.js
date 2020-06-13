@@ -6,10 +6,18 @@ import router from './router'
 
 Vue.config.productionTip = false
 
+// reverse Proxy
+var axios = require('axios')
+axios.defaults.baseURL = 'http://localhost:8081/api'
+    // global registry
+Vue.prototype.$axios = axios
+Vue.config.productionTip = false
+
+
 /* eslint-disable no-new */
 new Vue({
-  el: '#app',
-  router,
-  components: { App },
-  template: '<App/>'
+    el: '#app',
+    router,
+    components: { App },
+    template: '<App/>'
 })
