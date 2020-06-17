@@ -12,6 +12,7 @@
   "dependencies": {
     "axios": "^0.19.2",
     "bootstrap": "^4.5.0",
+    "bootstrap-icons": "^1.0.0-alpha4",
     "element": "^0.1.4",
     "element-ui": "^2.13.2",
     "jquery": "^3.5.1",
