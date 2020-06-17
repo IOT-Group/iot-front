@@ -27,7 +27,11 @@
     <div class="container-fluid container-main">
       <!-- 环境控制台 -->
       <div class="collapse card console-environment" id="collapse-environment">
-        <h4>环境控制台</h4>
+        <div class="console-environment-header">
+          <h4>环境控制台</h4>
+          <button :class="['btn-sm btn btn-ownerstate',ownerstate?'btn-secondary':'btn-success']" @click="ownerstate=!ownerstate">{{ownerstate?'出门':'回家'}}</button>
+        </div>
+        
         <hr class="my-1">
         <div class="container-data">
           <div class="container-bars">
@@ -42,7 +46,6 @@
             <div class="line-status line">
               <span class="badge badge-light label-line-status">主人状态</span>
               <span :class="[ownerstate ? 'badge-success':'badge-secondary','badge']">{{ownerstate?'在家':'不在家'}}</span>
-              <a :class="['badge',ownerstate?'badge-secondary':'badge-success']" href="#" @click="ownerstate=!ownerstate" style="margin-left:2rem">{{ownerstate?'出门':'回家'}}</a>
             </div>     
           </div>
         </div>        
@@ -163,7 +166,18 @@ export default {
 
   .console-environment{
     padding-top: 1rem;
-    width: 40%;
+    padding-bottom: 1rem;
+    max-width: 40rem;
+  }
+
+  .console-environment-header{
+    display: flex;
+    justify-content: center;
+  }
+
+  .btn-ownerstate{
+    position: absolute;
+    right: 3rem;
   }
 
   .container-data{
@@ -186,8 +200,8 @@ export default {
   .line-status{
     align-items: center;
     width: fit-content;
-    font-size: .8rem;
     padding: .25rem 0 .25rem 0;
+    font-size: .8rem;
   }
 
   .label-line-status{
@@ -197,5 +211,6 @@ export default {
   .badge-ownerstate{
     padding: .1rem;
   }
+
 </style>
 

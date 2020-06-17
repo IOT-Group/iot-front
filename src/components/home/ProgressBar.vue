@@ -3,11 +3,11 @@
     <span class="badge badge-light">{{label}}</span>
     <div
       class="bar-outter"
-      :style="{backgroundColor:backgroundcolor,width:'10rem',height:'.25rem'}"
+      :style="{backgroundColor:backgroundcolor,width:'10rem',height:'.45rem'}"
     >
       <div
         class="bar-inner"
-        :style="{backgroundColor:color,width:((value-min)/(max-min)*10)+'rem',height:'.25rem'}"
+        :style="{backgroundColor:color,width:((value-min)/(max-min)*10)+'rem',height:'.45rem'}"
       ></div>
     </div>
     <div class="detail">{{value}}{{unit}}</div>
@@ -55,7 +55,7 @@ export default {
   margin-left: 0.5rem;
 }
 .detail {
-  font-size: 8px;
+  font-size: 12px;
   margin-left: 0.75rem;
 }
 </style>

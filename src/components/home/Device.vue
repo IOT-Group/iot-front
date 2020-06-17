@@ -1,5 +1,5 @@
 <template>
-  <div class="container-device">
+  <div class="container-device" style="width:fit-content">
     <div container-device-info>
       <img src />
       <div>id.{{id}}</div>
