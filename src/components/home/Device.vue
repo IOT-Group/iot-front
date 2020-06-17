@@ -7,7 +7,7 @@
     </div>
     <div class="container-device-operations" v-html="operations">
     </div>
-    <a href="#" :class="['badge',state==0?'badge-success':'badge-danger']">{{state==0?'打开':'关闭'}}</a>
+    <a href="#" :class="['badge',state==0?'badge-success':'badge-danger']" @click="state=1-state">{{state==0?'打开':'关闭'}}</a>
   </div>
 </template>
 
