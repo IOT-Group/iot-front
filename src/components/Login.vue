@@ -11,7 +11,7 @@
 </template>
 
 <script>
-  import wave from './animations/wave'
+  import wave from './animations/Wave'
 
   export default {
     name: 'Login',
@@ -46,9 +46,10 @@
   }
 </script>
 
-<style>
+<style scoped>
   .container-login{
     justify-content: center;
+    margin-top: 20rem;
   }
 
   .container-form{
