@@ -1,0 +1,30 @@
+<template>
+  <div class="container-device">
+    <div container-device-info>
+      <img src />
+      <div>id.{{id}}</div>
+      <div>{{type}}</div>
+    </div>
+    <div class="container-device-operations" v-html="operations">
+    </div>
+    <a href="#" :class="['badge',state==0?'badge-success':'badge-danger']">{{state==0?'打开':'关闭'}}</a>
+  </div>
+</template>
+
+<script>
+export default {
+  props: {
+    id: {
+      required: true
+    },
+    type: {
+      default: "未知"
+    },
+    state: {
+      default: 0
+    },operations:{
+        default: ""
+    }
+  }
+};
+</script>
