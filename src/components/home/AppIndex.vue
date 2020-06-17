@@ -173,11 +173,14 @@ export default {
   .console-environment-header{
     display: flex;
     justify-content: center;
+    align-items: center;
   }
 
   .btn-ownerstate{
     position: absolute;
+    height: 1.5rem;
     right: 3rem;
+    font-size: .7rem;
   }
 
   .container-data{
@@ -200,8 +203,8 @@ export default {
   .line-status{
     align-items: center;
     width: fit-content;
-    padding: .25rem 0 .25rem 0;
-    font-size: .8rem;
+    padding: .1rem 0;
+    font-size: .9rem;
   }
 
   .label-line-status{

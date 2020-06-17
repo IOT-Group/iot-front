@@ -6,10 +6,11 @@ import AppIndex from '@/components/home/AppIndex'
 Vue.use(Router)
 
 export default new Router({
+    mode: 'history',
     routes: [{
             path: '/',
-            name: 'Index',
-            component: AppIndex
+            name: 'Login',
+            component: Login
         },
         {
             path: '/login',
