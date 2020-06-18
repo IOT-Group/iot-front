@@ -20,6 +20,15 @@
             </li>
           </ul>
         </div>
+        <div class="navbar-right">
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text">语音控制</span>
+            </div>
+            <input type="text" class="form-control" placeholder="请输入想要发送的语音信息" v-model="voiceMessage">
+          </div>
+          <button class="btn btn-success" style="margin-left:2rem">发送</button>
+        </div>
       </nav>
     </div>
 
@@ -57,69 +66,71 @@
       </div>
     </div>
 
-    <!-- 添加设备modal -->
-    <div class="modal" id="modal-device">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">添加设备</h5>
-            <button type="button" class="close" data-dismiss="modal">
-              &times;
-            </button>
-          </div>
-          <div class="modal-body">
-            <div class="input-group mb-3">
-              <div class="input-group-prepend">
-                <label class="input-group-text">设备类型</label>
-              </div>
-              <select class="custom-select" v-model="deviceidtoadd">
-                <option selected value="0">请选择要添加的设备类型</option>
-                <option value="1">One</option>
-                <option value="2">Two</option>
-                <option value="3">Three</option>
-              </select>
+    <!-- models -->
+    <template>
+      <!-- 添加设备modal -->
+      <div class="modal" id="modal-device">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">添加设备</h5>
+              <button type="button" class="close" data-dismiss="modal">
+                &times;
+              </button>
             </div>
-            <div class="container-device-detail" v-if="deviceidtoadd!=0">
-              <div class="line-status line">
-                <span class="badge badge-light line-status-label">功率</span>
-                <span>40W</span>
+            <div class="modal-body">
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <label class="input-group-text">设备类型</label>
+                </div>
+                <select class="custom-select" v-model="deviceidtoadd">
+                  <option selected value="0">请选择要添加的设备类型</option>
+                  <option value="1">One</option>
+                  <option value="2">Two</option>
+                  <option value="3">Three</option>
+                </select>
               </div>
-              <div class="line-status line">
-                <span class="badge badge-light line-status-label">电压</span>
-                <span>220V</span>
+              <div class="container-device-detail" v-if="deviceidtoadd!=0">
+                <div class="line-status line">
+                  <span class="badge badge-light line-status-label">功率</span>
+                  <span>40W</span>
+                </div>
+                <div class="line-status line">
+                  <span class="badge badge-light line-status-label">电压</span>
+                  <span>220V</span>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-            <button type="button" class="btn btn-primary">确定</button>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+              <button type="button" class="btn btn-primary">确定</button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- 日程管理modal -->
-    <div class="modal" id="modal-schedule">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">日程管理</h5>
-            <button type="button" class="close" data-dismiss="modal">
-              &times;
-            </button>
-          </div>
-          <div class="modal-body">
-            <table></table>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-            <button type="button" class="btn btn-primary">确定</button>
+      <!-- 日程管理modal -->
+      <div class="modal" id="modal-schedule">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">日程管理</h5>
+              <button type="button" class="close" data-dismiss="modal">
+                &times;
+              </button>
+            </div>
+            <div class="modal-body">
+              <table></table>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+              <button type="button" class="btn btn-primary">确定</button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </template>
   </div>
-
 </template>
 
 <script>
@@ -134,23 +145,34 @@ export default {
       humidity: 4,
       time: '12:00',
       ownerstate:true,
+      voiceMessage: '',
       deviceidtoadd:0,
       devices:[
         {
           id:1,
-          type:'空调',
+          name:'A1',
+          type:'AirConditioner',
           state:1
         },
         {
           id:2,
-          type:'加湿器',
+          name:'H1',
+          type:'Humidifier',
           state:1
+        },
+        {
+          id:3,
+          name:'L2',
+          type:'Light',
+          state:0
         }
       ]
     }
   },
   methods:{
-
+    sendVoiceMessage(){
+      console.log(this.voiceMessage)
+    }
   },components:{
     progressbar,
     device
@@ -162,6 +184,13 @@ export default {
 
   .container-main{
     padding-top: 1rem;
+  }
+
+  .navbar-right{
+    margin-right: 10rem;
+    display: flex;
+    display: -webkit-box;
+    display: -webkit-inline-box;
   }
 
   .console-environment{
