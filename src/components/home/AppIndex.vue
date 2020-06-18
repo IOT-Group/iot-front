@@ -40,7 +40,11 @@
       <div class="collapse card console-environment" id="collapse-environment">
         <div class="console-environment-header">
           <h4>环境控制台</h4>
-          <button :class="['btn-sm btn btn-ownerstate',env.ownerstate?'btn-secondary':'btn-success']" @click="env.ownerstate=!env.ownerstate">{{env.ownerstate?'出门':'回家'}}</button>
+          <button :class="['btn-sm btn btn-ownerstate',env.ownerstate?'btn-secondary':'btn-success',ownerstateChanging?'disabled':'']" 
+          @click="changeOwnerState">
+          <span class="spinner-grow spinner-grow-sm" v-show="ownerstateChanging"></span>
+          <span>{{env.ownerstate?'出门':'回家'}}</span>
+          </button>
         </div>     
         <hr class="my-1">
         <div class="container-data">
@@ -51,7 +55,7 @@
           <div class="container-status">
             <div class="line-status line">
               <span class="badge badge-light label-line-status">时间</span>
-              <span>{{env.time}}</span>
+              <span>{{timeStr}}</span>
             </div>
             <div class="line-status line">
               <span class="badge badge-light label-line-status">主人状态</span>
@@ -132,6 +136,23 @@
           </div>
         </div>
       </div>
+
+      <!-- 人脸识别modal -->
+      <div class="modal" id="modal-face">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">人脸识别中</h5>
+              <button type="button" class="close" data-dismiss="modal">
+                &times;
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="spinner-grow"></div>
+            </div>
+          </div>
+        </div>
+      </div>
     </template>
   </div>
 </template>
@@ -144,10 +165,11 @@ export default {
   data() {
     return {
       environmentconsole: false,
+      ownerstateChanging: false,
       env:{
         temperature: 30,
         humidity: 4,
-        time: '12:00',
+        time: 720,
         ownerstate:true
       },      
       voiceMessage: '',
@@ -196,6 +218,13 @@ export default {
       alertMessage:''
     }
   },
+  computed:{
+    timeStr:function(){
+      let minute = new String(this.env.time%60)
+      if(minute.length==1) minute=(minute=='0'?'00':('0'+minute))
+      return Math.floor(this.env.time/60)+':'+minute
+    }
+  },
   methods:{
     /**
     发送语音消息
@@ -208,6 +237,34 @@ export default {
      */
     operate(data){
       console.log(data)
+    },
+    /**
+     * 更改主人状态
+     */
+    changeOwnerState(){
+      this.ownerstateChanging = true
+      if(this.env.ownerstate==false){
+        $('#modal-face').modal('show')
+        setTimeout(() => {
+          $('#modal-face').modal('hide')
+          this.env.ownerstate=!this.env.ownerstate
+          this.ownerstateChanging=false
+          this.alertMsg('认证成功!')
+        }, 2500);
+      }else{
+        setTimeout(() => {
+          this.env.ownerstate=!this.env.ownerstate
+          this.ownerstateChanging=false
+          this.alertMsg('主人已离开.')
+        }, 2000); 
+      }    
+    },
+    alertMsg(msg,time=2500){
+      this.isAlert=true
+      this.alertMessage=msg
+      setTimeout(() => {
+        this.isAlert=false;
+      }, time);
     }
   },components:{
     progressbar,

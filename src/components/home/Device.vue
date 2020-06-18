@@ -21,7 +21,7 @@
       </div>
       <div v-if="type=='AirConditioner' || type=='Light' || type=='TV' || type=='Curtain' || type=='Humidifier' || type=='Box'">
         <a href="#" :class="['badge',stateD==0?'badge-success':'badge-danger']"
-         @click="$emit('deviceOperation',{id:id,code:btnCode});stateD=1-stateD">{{stateD==0?'打开':'关闭'}}{{btnCode}}</a>
+         @click="$emit('deviceOperation',{id:id,code:btnCode});stateD=1-stateD">{{stateD==0?'打开':'关闭'}}</a>
       </div>      
     </div> 
   </div>
