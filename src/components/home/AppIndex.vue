@@ -29,7 +29,7 @@
             </div>
             <input type="text" class="form-control" placeholder="请输入想要发送的语音信息" v-model="voiceMessage">
           </div>
-          <button class="btn btn-success" style="margin-left:2rem">发送</button>
+          <button class="btn btn-success" style="margin-left:2rem" @click="sendVoiceMessage">发送</button>
         </div>
       </nav>
     </div>
@@ -64,7 +64,8 @@
       <!-- 设备列表 -->
       <div class="container-devices col-md-8">
         <h4 style="position:absolute;left:-3rem;top:-1rem;">你的设备</h4>
-        <device v-for="device in devices" :key="device.id" :id="device.id" :type="device.type" :state="device.state" :env="env"></device>
+        <device v-for="device in devices" :key="device.id" :id="device.id" :type="device.type" 
+        :state="device.state" :env="env" @deviceOperation='operate'></device>
       </div>
     </div>
 
@@ -196,8 +197,17 @@ export default {
     }
   },
   methods:{
+    /**
+    发送语音消息
+     */
     sendVoiceMessage(){
       console.log(this.voiceMessage)
+    },
+    /**
+    操作设备(核心方法)
+     */
+    operate(data){
+      console.log(data)
     }
   },components:{
     progressbar,
