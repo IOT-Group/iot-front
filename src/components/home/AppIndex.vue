@@ -39,8 +39,7 @@
         <div class="console-environment-header">
           <h4>环境控制台</h4>
           <button :class="['btn-sm btn btn-ownerstate',ownerstate?'btn-secondary':'btn-success']" @click="ownerstate=!ownerstate">{{ownerstate?'出门':'回家'}}</button>
-        </div>
-        
+        </div>     
         <hr class="my-1">
         <div class="container-data">
           <div class="container-bars">
@@ -61,7 +60,8 @@
       </div>
 
       <!-- 设备列表 -->
-      <div class="container-devices">
+      <div class="container-devices col-md-8">
+        <h4 style="position:absolute;left:-3rem;top:-1rem;">你的设备</h4>
         <device v-for="device in devices" :key="device.id" :id="device.id" :type="device.type" :state="device.state"></device>
       </div>
     </div>
@@ -165,6 +165,24 @@ export default {
           name:'L2',
           type:'Light',
           state:0
+        },
+        {
+          id:4,
+          name:'C2',
+          type:'Curtain',
+          state:0
+        },
+        {
+          id:5,
+          name:'B2',
+          type:'Box',
+          state:0
+        },
+        {
+          id:6,
+          name:'T2',
+          type:'TV',
+          state:0
         }
       ]
     }
@@ -197,6 +215,7 @@ export default {
     padding-top: 1rem;
     padding-bottom: 1rem;
     max-width: 40rem;
+    margin: auto;
   }
 
   .console-environment-header{
@@ -244,5 +263,12 @@ export default {
     padding: .1rem;
   }
 
+  /* devices */
+  .container-devices{
+    margin:auto;
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+  }
 </style>
 
