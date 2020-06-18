@@ -135,7 +135,24 @@
               </button>
             </div>
             <div class="modal-body">
-              <table></table>
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>设备编号</th>
+                    <th>设备名</th>
+                    <th>操作</th>
+                    <th>时间</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="item in sortedSchedule" :key="{id:item.id,code:item.code,time:item.time}">
+                    <td>{{item.id}}</td>
+                    <td>{{item.name}}</td>
+                    <td>{{item.code}}</td>
+                    <td>{{item.time}}</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
@@ -225,7 +242,12 @@ export default {
       ],
       isAlert:false,
       alertMessage:'',
-      schedule:[]
+      schedule:[
+        {id:1,name:'A1',code:'A_PowerOn_28',time:45},
+        {id:1,name:'A1',code:'A_PowerOn_28',time:55},
+        {id:1,name:'A1',code:'A_PowerOn_28',time:15},
+        {id:6,name:'T1',code:'TPowerOn',time:455}
+      ]
     }
   },
   computed:{
@@ -233,6 +255,19 @@ export default {
       let minute = new String(this.env.time%60)
       if(minute.length==1) minute=(minute=='0'?'00':('0'+minute))
       return Math.floor(this.env.time/60)+':'+minute
+    },
+    sortedSchedule:function(){
+      let [...list] = this.schedule
+      list.sort((x,y)=>{
+        return x.time-y.time
+      })
+      for(let i=0;i<list.length;i++){
+        let t = list[i].time
+        let m = new String(list[i].time%60)
+        if(m.length==1) m = (m=='0'?'00':'0'+m)
+        list[i].time = Math.floor(t/60)+':'+m
+      }
+      return list
     }
   },
   methods:{
