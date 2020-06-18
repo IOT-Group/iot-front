@@ -20,6 +20,8 @@
             </li>
           </ul>
         </div>
+        <div v-show="isAlert" class="alert alert-success" style="margin-bottom:0;padding:.3rem 1.25rem;margin-right:3rem">{{alertMessage}}</div>
+        <div v-show="isVoiceAlert" class="alert alert-success" style="margin-bottom:0;padding:.3rem 1.25rem;margin-right:3rem">{{voiceAlertMessage}}</div>
         <div class="navbar-right">
           <div class="input-group">
             <div class="input-group-prepend">
@@ -38,22 +40,22 @@
       <div class="collapse card console-environment" id="collapse-environment">
         <div class="console-environment-header">
           <h4>环境控制台</h4>
-          <button :class="['btn-sm btn btn-ownerstate',ownerstate?'btn-secondary':'btn-success']" @click="ownerstate=!ownerstate">{{ownerstate?'出门':'回家'}}</button>
+          <button :class="['btn-sm btn btn-ownerstate',env.ownerstate?'btn-secondary':'btn-success']" @click="env.ownerstate=!env.ownerstate">{{env.ownerstate?'出门':'回家'}}</button>
         </div>     
         <hr class="my-1">
         <div class="container-data">
           <div class="container-bars">
-            <progressbar class="line" :label='"温度"' :unit='"℃"' :value=temperature :max=60></progressbar>
-            <progressbar class="line" :label='"湿度"' :value=humidity></progressbar>
+            <progressbar class="line" :label='"温度"' :unit='"℃"' :value=env.temperature :max=60></progressbar>
+            <progressbar class="line" :label='"湿度"' :value=env.humidity></progressbar>
           </div>
           <div class="container-status">
             <div class="line-status line">
               <span class="badge badge-light label-line-status">时间</span>
-              <span>{{time}}</span>
+              <span>{{env.time}}</span>
             </div>
             <div class="line-status line">
               <span class="badge badge-light label-line-status">主人状态</span>
-              <span :class="[ownerstate ? 'badge-success':'badge-secondary','badge']">{{ownerstate?'在家':'不在家'}}</span>
+              <span :class="[env.ownerstate ? 'badge-success':'badge-secondary','badge']">{{env.ownerstate?'在家':'不在家'}}</span>
             </div>     
           </div>
         </div>        
@@ -62,7 +64,7 @@
       <!-- 设备列表 -->
       <div class="container-devices col-md-8">
         <h4 style="position:absolute;left:-3rem;top:-1rem;">你的设备</h4>
-        <device v-for="device in devices" :key="device.id" :id="device.id" :type="device.type" :state="device.state"></device>
+        <device v-for="device in devices" :key="device.id" :id="device.id" :type="device.type" :state="device.state" :env="env"></device>
       </div>
     </div>
 
@@ -141,11 +143,15 @@ export default {
   data() {
     return {
       environmentconsole: false,
-      temperature: 30,
-      humidity: 4,
-      time: '12:00',
-      ownerstate:true,
+      env:{
+        temperature: 30,
+        humidity: 4,
+        time: '12:00',
+        ownerstate:true
+      },      
       voiceMessage: '',
+      isVoiceAlert:false,
+      voiceAlertMessage:'',
       deviceidtoadd:0,
       devices:[
         {
@@ -184,7 +190,9 @@ export default {
           type:'TV',
           state:0
         }
-      ]
+      ],
+      isAlert:false,
+      alertMessage:''
     }
   },
   methods:{
@@ -269,6 +277,7 @@ export default {
     display: flex;
     flex-wrap: wrap;
     margin-top: 1rem;
+    justify-content: space-around;
   }
 </style>
 

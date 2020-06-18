@@ -4,14 +4,22 @@
       <img :src="'/static/'+type+'.png'" class="img-device">
       <div style="margin-left:1rem">
         <div><strong>ID.{{id}}</strong></div>
-        <div>{{type}}</div>
-        <indicator :state="state" style="margin:auto"></indicator>
+        <div>{{type}}{{temperature}}</div>
+        <indicator :state="stateD" style="margin:auto"></indicator>
       </div>     
     </div>
-    <div class="container-device-operations">
-      <div v-if="type=='AirConditioner'"></div>
+    <div class="container-device-operations" style="display:flex;justify-content:space-around">
+      <div v-if="type=='AirConditioner'" style="display:flex">
+        <div class="input-group" style="max-width:6rem;max-height:1.8rem;">
+          <input type="text" class="form-control" style="max-height:inherit;padding:.2rem;" v-model="temperatureD">
+          <div class="input-group-append">
+            <span class="input-group-text" style="max-height:inherit;padding:.2rem;font-size:.6rem;">℃</span>
+          </div>
+        </div>       
+        <button class="btn btn-success" style="margin-left:.4rem;margin-right:1rem;max-height:1.8rem;font-size:12px" @click="setTemperature">设置</button>
+      </div>
       <div v-if="type=='AirConditioner' || type=='Light' || type=='TV' || type=='Curtain' || type=='Humidifier' || type=='Box'">
-        <a href="#" :class="['badge',state==0?'badge-success':'badge-danger']" @click="state=1-state">{{state==0?'打开':'关闭'}}</a>
+        <a href="#" :class="['badge',stateD==0?'badge-success':'badge-danger']" @click="stateD=1-stateD">{{stateD==0?'打开':'关闭'}}</a>
       </div>      
     </div> 
   </div>
@@ -30,9 +38,32 @@ export default {
     },
     state: {
       default: 0
+    },
+    temperature:{
+      default: 30
+    },
+    env:{
+      required:true
     }
-  },components:{
+  },
+  data(){
+    return{
+      stateD:this.state,
+      temperatureD:this.temperature,
+      envD:this.env
+    }
+  },
+  components:{
     indicator
+  },
+  methods:{
+    /**
+     * 设置空调温度
+     */
+    setTemperature(){
+      console.log(this.id);
+      console.log(this.temperatureD);
+    }
   }
 };
 </script>
