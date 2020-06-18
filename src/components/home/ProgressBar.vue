@@ -18,9 +18,6 @@
 export default {
   name: "ProgressBar",
   props: {
-    color: {
-      default: "#28a745"
-    },
     backgroundcolor: {
       default: "#f8f9fa"
     },
@@ -38,6 +35,20 @@ export default {
     },
     unit: {
       default: ""
+    }
+  },computed:{
+    color:function(){
+      let rv = this.value-this.min
+      let rm = this.max-this.min
+      if(rv/rm<0.25){
+        return '#007bff'
+      }else if(rv/rm<0.55){
+        return '#28a745'
+      }else if(rv/rm<0.85){
+        return '#ffc107'
+      }else{
+        return '#dc3545'
+      }
     }
   }
 };

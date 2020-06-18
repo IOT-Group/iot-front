@@ -56,6 +56,14 @@
             <div class="line-status line">
               <span class="badge badge-light label-line-status">时间</span>
               <span>{{timeStr}}</span>
+              <div class="btn-group" style="margin-left:2rem">
+                <button :class="['btn btn-success btn-sm',timeStep==0?'disabled':'']" id="btn-time-pause"
+                @click="timeStep=0">暂停</button>
+                <button :class="['btn btn-success btn-sm',timeStep==5?'disabled':'']" id="btn-time-5"
+                @click="timeStep=5">5min</button>
+                <button :class="['btn btn-success btn-sm',timeStep==30?'disabled':'']" id="btn-time-30"
+                @click="timeStep=30">30min</button>
+              </div>
             </div>
             <div class="line-status line">
               <span class="badge badge-light label-line-status">主人状态</span>
@@ -166,6 +174,7 @@ export default {
     return {
       environmentconsole: false,
       ownerstateChanging: false,
+      timeStep: 0,
       env:{
         temperature: 30,
         humidity: 4,
@@ -215,7 +224,8 @@ export default {
         }
       ],
       isAlert:false,
-      alertMessage:''
+      alertMessage:'',
+      schedule:[]
     }
   },
   computed:{
@@ -297,6 +307,11 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
+  }
+
+  .console-environment .btn-sm{
+    max-height: 1.6rem;
+    font-size: .8rem;
   }
 
   .btn-ownerstate{
