@@ -13,6 +13,7 @@
 
 <script>
 export default {
+  name: 'Device',
   props: {
     id: {
       required: true
