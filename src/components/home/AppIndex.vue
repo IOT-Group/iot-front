@@ -455,26 +455,27 @@ export default {
         .then(res => {
           if (res.succ) {
             if (this.env.ownerstate == false) {
-              $("#modal-face").modal("show")
+              $("#modal-face").modal("show");
               setTimeout(() => {
-                $("#modal-face").modal("hide")
+                $("#modal-face").modal("hide");
                 this.env.ownerstate = !this.env.ownerstate;
                 this.ownerstateChanging = false;
-                this.alertMsg("认证成功!")
+                this.alertMsg("认证成功!");
               }, 2500);
             } else {
               setTimeout(() => {
                 this.env.ownerstate = !this.env.ownerstate;
                 this.ownerstateChanging = false;
-                this.alertMsg("主人已离开.")
+                this.alertMsg("主人已离开.");
               }, 2000);
             }
-          }else{
-            alertMsg('认证失败!')
-            this.ownerstateChanging=false
+          } else {
+            alertMsg("认证失败!");
+            this.ownerstateChanging = false;
           }
-        }).catch(err=>{
-          alertMsg('网络错误!',true)
+        })
+        .catch(err => {
+          alertMsg("网络错误!", true);
         });
     },
     /**
@@ -614,26 +615,69 @@ export default {
           this.devices.push(res.content);
           alertMsg("添加设备成功!");
         });
+    },
+    /**
+     * 11. 定时发送环境
+     */
+    sendEnvironment() {
+      console.log('sending environment')
+      console.log(this.env)
+      if (this.timeStep == 0) {
+        setTimeout(() => {
+          this.sendEnvironment();
+        }, 2000);
+      } else {
+        this.$axios
+          .post("/environment", {
+            username: this.username,
+            time: this.env.time,
+            temperature: this.env.temperature,
+            humidity: this.env.humidity,
+            ownerState: this.env.ownerstate,
+            timeInterval: this.timeStep
+          })
+          .then(function(res) {
+            if (res.succ) {
+              this.env.time = (this.env.time + this.timeStep) % 1440;
+            }
+            setTimeout(() => {
+              this.sendEnvironment();
+            }, 2000);
+          })
+          .catch(err => {
+            setTimeout(() => {
+              this.sendEnvironment();
+            }, 10000);
+          });
+      }
     }
   },
   created() {
     this.getDevices();
     this.getSchedule();
     this.getDeviceTypes();
-    setInterval(() => {
-      this.$axios
-        .post("/environment", {
-          username: this.username,
-          time: this.env.time,
-          temperature: this.env.temperature,
-          humidity: this.env.humidity,
-          ownerState: this.env.ownerstate,
-          timeIntervla: this.timeStep
-        })
-        .then(function(res) {
-          if (res.succ) {
-          }
-        });
+    /**
+     * 11. 定时发送环境信息
+     */
+    // setInterval(() => {
+    //   this.$axios
+    //     .post("/environment", {
+    //       username: this.username,
+    //       time: this.env.time,
+    //       temperature: this.env.temperature,
+    //       humidity: this.env.humidity,
+    //       ownerState: this.env.ownerstate,
+    //       timeInterval: this.timeStep
+    //     })
+    //     .then(function(res) {
+    //       if (res.succ) {
+    //         this.env.time = (this.env.time + this.timeStep) % 1440;
+    //       }
+    //     });
+    // }, 2000);
+
+    setTimeout(() => {
+      this.sendEnvironment();
     }, 2000);
   },
   components: {
