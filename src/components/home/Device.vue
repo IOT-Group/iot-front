@@ -34,7 +34,7 @@
         <button
           class="btn btn-success"
           style="margin-left:.4rem;margin-right:1rem;max-height:1.8rem;font-size:12px"
-          @click="$emit('deviceOperation',{id:id,code:'A_SetTo_'+temperature})"
+          @click="$emit('deviceOperation',{id:id,code:String(temperature)})"
         >设置</button>
       </div>
       <div

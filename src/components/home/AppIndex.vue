@@ -111,7 +111,12 @@
 
       <!-- 设备列表 -->
       <div class="container-devices col-md-8">
-        <h4 style="position:absolute;left:-3rem;top:-1rem;">你的设备</h4>
+        <h4 style="position:absolute;left:-3rem;top:-1rem;">
+          你的设备
+          <span v-if="isDeviceLoading" style="margin-left:2rem;">
+            <span class="spinner-grow spinner-grow-lg"></span>加载中...
+          </span>
+        </h4>
         <device
           v-for="device in devices"
           :key="device.id"
@@ -140,27 +145,25 @@
                 <div class="input-group-prepend">
                   <label class="input-group-text">设备类型</label>
                 </div>
-                <select class="custom-select" v-model="deviceidtoadd">
+                <select class="custom-select" v-model="deviceTypeIdToAdd">
                   <option selected value="0">请选择要添加的设备类型</option>
-                  <option value="1">One</option>
-                  <option value="2">Two</option>
-                  <option value="3">Three</option>
+                  <option v-for="type in deviceTypes" :key="type.id" :value="type.id">{{type.name}}</option>
                 </select>
               </div>
-              <div class="container-device-detail" v-if="deviceidtoadd!=0">
+              <div class="container-device-detail" v-if="deviceTypeIdToAdd!=0">
                 <div class="line-status line">
                   <span class="badge badge-light line-status-label">功率</span>
-                  <span>40W</span>
+                  <span>{{deviceTypeToAdd.power}}W</span>
                 </div>
                 <div class="line-status line">
                   <span class="badge badge-light line-status-label">电压</span>
-                  <span>220V</span>
+                  <span>{{deviceTypeToAdd.voltage}}V</span>
                 </div>
               </div>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-              <button type="button" class="btn btn-primary">确定</button>
+              <button type="button" class="btn btn-primary" @click="addDevice">确定</button>
             </div>
           </div>
         </div>
@@ -196,12 +199,41 @@
                     :schedule="item"
                     @deleteSchedule="deleteSchedule"
                   ></schedule-row>
+                  <tr>
+                    <th>
+                      <button
+                        class="close"
+                        style="position:absolute;left:2rem"
+                        @click="addSchedule"
+                      >&plus;</button>
+                      <input
+                        type="text"
+                        class="form-control input-schedule"
+                        style="margin-left:2.5rem"
+                        v-model="scheduleToAdd.deviceId"
+                      />
+                    </th>
+                    <th>{{scheduleAddName}}</th>
+                    <th>
+                      <input
+                        type="text"
+                        class="form-control input-schedule"
+                        v-model="scheduleToAdd.code"
+                      />
+                    </th>
+                    <th>
+                      <input
+                        type="text"
+                        class="form-control input-schedule"
+                        v-model="scheduleToAdd.time"
+                      />
+                    </th>
+                  </tr>
                 </tbody>
               </table>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-              <button type="button" class="btn btn-primary">确定</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">退出</button>
             </div>
           </div>
         </div>
@@ -246,7 +278,6 @@ export default {
       voiceMessage: "",
       isVoiceAlert: false,
       voiceAlertMessage: "",
-      deviceidtoadd: 0,
       devices: [
         {
           id: 1,
@@ -285,6 +316,7 @@ export default {
           state: 0
         }
       ],
+      isDeviceLoading: false,
       isAlert: false,
       isErrorAlert: false,
       alertMessage: "",
@@ -294,8 +326,51 @@ export default {
         { deviceId: 1, name: "A1", code: "28", time: 15 },
         { deviceId: 6, name: "T1", code: "1", time: 455 }
       ],
+      scheduleToAdd: {
+        deviceId: "",
+        time: 0,
+        code: "0"
+      },
       isScheduleAlert: false,
-      scheduleAlertMessage: ""
+      scheduleAlertMessage: "",
+      deviceTypeIdToAdd: 0,
+      deviceTypes: [
+        {
+          id: 1,
+          name: "A1",
+          type: "Airconditioner",
+          power: 40,
+          voltage: 220
+        },
+        {
+          id: 2,
+          name: "A2",
+          type: "Airconditioner",
+          power: 20,
+          voltage: 220
+        },
+        {
+          id: 3,
+          name: "T1",
+          type: "TV",
+          power: 110,
+          voltage: 220
+        },
+        {
+          id: 4,
+          name: "T2",
+          type: "TV",
+          power: 20,
+          voltage: 220
+        },
+        {
+          id: 5,
+          name: "B1",
+          type: "Box",
+          power: 40,
+          voltage: 220
+        }
+      ]
     };
   },
   computed: {
@@ -310,11 +385,25 @@ export default {
         return x.time - y.time;
       });
       return list;
+    },
+    scheduleAddName() {
+      for (let i = 0; i < this.devices.length; i++) {
+        if (this.devices[i].id == this.scheduleToAdd.deviceId)
+          return this.devices[i].name;
+      }
+      return "";
+    },
+    deviceTypeToAdd() {
+      for (let i = 0; i < this.deviceTypes.length; i++) {
+        if (this.deviceTypes[i].id == this.deviceTypeIdToAdd)
+          return this.deviceTypes[i];
+      }
+      return { id: 0 };
     }
   },
   methods: {
     /**
-    发送语音消息
+    1. 发送语音消息
      */
     sendVoiceMessage() {
       this.$axios
@@ -331,31 +420,62 @@ export default {
         });
     },
     /**
-    操作设备(核心方法)
+    2. 操作设备
      */
     operate(data) {
-      console.log(data);
+      this.$axios
+        .post("/operate", {
+          deviceId: data.id,
+          code: data.code,
+          time: this.env.time,
+          timeInterval: this.timeStep
+        })
+        .then(function(res) {
+          if (res.succ) {
+            alertMsg("操作成功!");
+          } else {
+            alertMsg("操作失败!", true);
+          }
+        })
+        .catch(err => {
+          alertMsg("网络错误!", true);
+        });
     },
     /**
-     * 更改主人状态
+     * 3. 更改主人状态
      */
     changeOwnerState() {
       this.ownerstateChanging = true;
-      if (this.env.ownerstate == false) {
-        $("#modal-face").modal("show");
-        setTimeout(() => {
-          $("#modal-face").modal("hide");
-          this.env.ownerstate = !this.env.ownerstate;
-          this.ownerstateChanging = false;
-          this.alertMsg("认证成功!");
-        }, 2500);
-      } else {
-        setTimeout(() => {
-          this.env.ownerstate = !this.env.ownerstate;
-          this.ownerstateChanging = false;
-          this.alertMsg("主人已离开.");
-        }, 2000);
-      }
+      this.$$axios
+        .post("/Recognition/rec", {
+          voiceInput: this.ownerState ? "0" : "1",
+          username: this.username,
+          timeInterval: this.timeStep
+        })
+        .then(res => {
+          if (res.succ) {
+            if (this.env.ownerstate == false) {
+              $("#modal-face").modal("show")
+              setTimeout(() => {
+                $("#modal-face").modal("hide")
+                this.env.ownerstate = !this.env.ownerstate;
+                this.ownerstateChanging = false;
+                this.alertMsg("认证成功!")
+              }, 2500);
+            } else {
+              setTimeout(() => {
+                this.env.ownerstate = !this.env.ownerstate;
+                this.ownerstateChanging = false;
+                this.alertMsg("主人已离开.")
+              }, 2000);
+            }
+          }else{
+            alertMsg('认证失败!')
+            this.ownerstateChanging=false
+          }
+        }).catch(err=>{
+          alertMsg('网络错误!',true)
+        });
     },
     /**
      * 操作成功后的消息提示
@@ -369,7 +489,7 @@ export default {
       }, time);
     },
     /**
-     * 删除设备
+     * 4. 删除设备
      */
     deleteDevice(id) {
       id = id.id;
@@ -397,7 +517,7 @@ export default {
       }
     },
     /**
-     * 删除日程
+     * 5. 删除日程
      */
     deleteSchedule(schedule) {
       console.log(schedule);
@@ -423,7 +543,98 @@ export default {
           console.error(res);
         }
       });
+    },
+    /**
+     * 6. 添加日程
+     */
+    addSchedule() {
+      this.scheduleToAdd.name = this.scheduleAddName;
+      var schedule = JSON.parse(JSON.stringify(this.scheduleToAdd));
+      this.$axios.post("/calendar/addCalendar", schedule).then(res => {
+        if (res.succ) {
+          this.schedule.push(schedule);
+        }
+      });
+    },
+    /**
+     * 7. 获取用户设备
+     */
+    getDevices() {
+      this.isDeviceLoading = true;
+      this.$axios
+        .post("/getDevices", {
+          username: this.username
+        })
+        .then(res => {
+          this.isDeviceLoading = false;
+          if (res.succ) {
+            this.devices = res.content;
+          }
+        });
+    },
+    /**
+     * 8. 获取日程表
+     */
+    getSchedule() {
+      this.$axios
+        .post("/calendar/getCalendar", {
+          username: this.username
+        })
+        .then(res => {
+          if (res.succ) {
+            this.schedule = res.content;
+          } else {
+            console.error(res);
+          }
+        });
+    },
+    /**
+     * 9. 获取支持的设备类型
+     */
+    getDeviceTypes() {
+      this.$axios.post("/getDeviceTypes", {}).then(res => {
+        if (res.succ) {
+          this.deviceTypes = res.content;
+        } else {
+          console.error(res);
+        }
+      });
+    },
+    /**
+     * 10. 添加设备
+     */
+    addDevice() {
+      this.$axios
+        .post("/addDevice", {
+          username: this.username,
+          deviceTypeId: this.deviceTypeIdToAdd
+        })
+        .then(res => {
+          $("#modal-device").modal("hide");
+          this.devices.push(res.content);
+          alertMsg("添加设备成功!");
+        });
     }
+  },
+  created() {
+    this.getDevices();
+    this.getSchedule();
+    this.getDeviceTypes();
+    setInterval(() => {
+      this.$axios
+        .post("/environment", {
+          username: this.username,
+          time: this.env.time,
+          temperature: this.env.temperature,
+          humidity: this.env.humidity,
+          ownerState: this.env.ownerstate,
+          timeIntervla: this.timeStep
+        })
+        .then(function(res) {
+          if (res.succ) {
+          }
+        });
+    }, 2000);
   },
   components: {
     progressbar,
@@ -500,6 +711,10 @@ export default {
 
 .badge-ownerstate {
   padding: 0.1rem;
+}
+
+.input-schedule {
+  max-width: 5rem;
 }
 
 /* devices */

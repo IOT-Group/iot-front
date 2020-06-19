@@ -20,13 +20,14 @@ export default {
     schedule: {
       required: true
     }
-  },computed:{
-      time(){
-        let t = this.schedule.time;
-        let m = new String(this.schedule.time % 60);
-        if (m.length == 1) m = m == "0" ? "00" : "0" + m;
-        return Math.floor(t / 60) + ":" + m;      
-      }
+  },
+  computed: {
+    time() {
+      let t = this.schedule.time;
+      let m = new String(this.schedule.time % 60);
+      if (m.length == 1) m = m == "0" ? "00" : "0" + m;
+      return Math.floor(t / 60) + ":" + m;
+    }
   }
 };
 </script>
