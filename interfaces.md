@@ -18,7 +18,7 @@
 
 8. addSchedule(schedule) or setSchedule?
 
-9. sendEnvironment(int:userid,int:temperature,int humidity,int time,int ownerstate)
+9. sendEnvironment(int:userid,int:temperature,int humidity,int time,int ownerstate,int:timeinterval)
 
 @return device[]+string[]msgs ? string[]:code,int:temperature,int:humidity
 

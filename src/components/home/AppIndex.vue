@@ -3,14 +3,24 @@
     <!-- 导航栏 -->
     <div class="container-navbar">
       <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <span class="navbar-brand">HOME</span>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-content">
+        <span class="navbar-brand">{{username}}'s HOME</span>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-toggle="collapse"
+          data-target="#navbar-content"
+        >
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbar-content">
           <ul class="navbar-nav">
             <li class="nav-item" v-bind:class="{active:environmentconsole}">
-              <a data-toggle="collapse" href="#collapse-environment" class="nav-link" v-on:click="environmentconsole=!environmentconsole">环境管理</a>
+              <a
+                data-toggle="collapse"
+                href="#collapse-environment"
+                class="nav-link"
+                v-on:click="environmentconsole=!environmentconsole"
+              >环境管理</a>
             </li>
             <li class="nav-item">
               <a href="#" class="nav-link" data-toggle="modal" data-target="#modal-schedule">日程管理</a>
@@ -20,14 +30,27 @@
             </li>
           </ul>
         </div>
-        <div v-show="isAlert" class="alert alert-success" style="margin-bottom:0;padding:.3rem 1.25rem;margin-right:3rem">{{alertMessage}}</div>
-        <div v-show="isVoiceAlert" class="alert alert-success" style="margin-bottom:0;padding:.3rem 1.25rem;margin-right:3rem">{{voiceAlertMessage}}</div>
+        <div
+          v-show="isAlert"
+          :class="['alert',isErrorAlert?'alert-danger':'alert-success']"
+          style="margin-bottom:0;padding:.3rem 1.25rem;margin-right:3rem"
+        >{{alertMessage}}</div>
+        <div
+          v-show="isVoiceAlert"
+          class="alert alert-success"
+          style="margin-bottom:0;padding:.3rem 1.25rem;margin-right:3rem"
+        >{{voiceAlertMessage}}</div>
         <div class="navbar-right">
           <div class="input-group">
             <div class="input-group-prepend">
               <span class="input-group-text">语音控制</span>
             </div>
-            <input type="text" class="form-control" placeholder="请输入想要发送的语音信息" v-model="voiceMessage">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="请输入想要发送的语音信息"
+              v-model="voiceMessage"
+            />
           </div>
           <button class="btn btn-success" style="margin-left:2rem" @click="sendVoiceMessage">发送</button>
         </div>
@@ -40,44 +63,65 @@
       <div class="collapse card console-environment" id="collapse-environment">
         <div class="console-environment-header">
           <h4>环境控制台</h4>
-          <button :class="['btn-sm btn btn-ownerstate',env.ownerstate?'btn-secondary':'btn-success',ownerstateChanging?'disabled':'']" 
-          @click="changeOwnerState">
-          <span class="spinner-grow spinner-grow-sm" v-show="ownerstateChanging"></span>
-          <span>{{env.ownerstate?'出门':'回家'}}</span>
+          <button
+            :class="['btn-sm btn btn-ownerstate',env.ownerstate?'btn-secondary':'btn-success',ownerstateChanging?'disabled':'']"
+            @click="changeOwnerState"
+          >
+            <span class="spinner-grow spinner-grow-sm" v-show="ownerstateChanging"></span>
+            <span>{{env.ownerstate?'出门':'回家'}}</span>
           </button>
-        </div>     
-        <hr class="my-1">
+        </div>
+        <hr class="my-1" />
         <div class="container-data">
           <div class="container-bars">
-            <progressbar class="line" :label='"温度"' :unit='"℃"' :value=env.temperature :max=60></progressbar>
-            <progressbar class="line" :label='"湿度"' :value=env.humidity></progressbar>
+            <progressbar class="line" :label="'温度'" :unit="'℃'" :value="env.temperature" :max="60"></progressbar>
+            <progressbar class="line" :label="'湿度'" :value="env.humidity"></progressbar>
           </div>
           <div class="container-status">
             <div class="line-status line">
               <span class="badge badge-light label-line-status">时间</span>
               <span>{{timeStr}}</span>
               <div class="btn-group" style="margin-left:2rem">
-                <button :class="['btn btn-success btn-sm',timeStep==0?'disabled':'']" id="btn-time-pause"
-                @click="timeStep=0">暂停</button>
-                <button :class="['btn btn-success btn-sm',timeStep==5?'disabled':'']" id="btn-time-5"
-                @click="timeStep=5">5min</button>
-                <button :class="['btn btn-success btn-sm',timeStep==30?'disabled':'']" id="btn-time-30"
-                @click="timeStep=30">30min</button>
+                <button
+                  :class="['btn btn-success btn-sm',timeStep==0?'disabled':'']"
+                  id="btn-time-pause"
+                  @click="timeStep=0"
+                >暂停</button>
+                <button
+                  :class="['btn btn-success btn-sm',timeStep==5?'disabled':'']"
+                  id="btn-time-5"
+                  @click="timeStep=5"
+                >5min</button>
+                <button
+                  :class="['btn btn-success btn-sm',timeStep==30?'disabled':'']"
+                  id="btn-time-30"
+                  @click="timeStep=30"
+                >30min</button>
               </div>
             </div>
             <div class="line-status line">
               <span class="badge badge-light label-line-status">主人状态</span>
-              <span :class="[env.ownerstate ? 'badge-success':'badge-secondary','badge']">{{env.ownerstate?'在家':'不在家'}}</span>
-            </div>     
+              <span
+                :class="[env.ownerstate ? 'badge-success':'badge-secondary','badge']"
+              >{{env.ownerstate?'在家':'不在家'}}</span>
+            </div>
           </div>
-        </div>        
+        </div>
       </div>
 
       <!-- 设备列表 -->
       <div class="container-devices col-md-8">
         <h4 style="position:absolute;left:-3rem;top:-1rem;">你的设备</h4>
-        <device v-for="device in devices" :key="device.id" :id="device.id" :type="device.type" 
-        :state="device.state" :env="env" @deviceOperation='operate'></device>
+        <device
+          v-for="device in devices"
+          :key="device.id"
+          :id="device.id"
+          :type="device.type"
+          :state="device.state"
+          :env="env"
+          @deviceOperation="operate"
+          @deleteDevice="deleteDevice"
+        ></device>
       </div>
     </div>
 
@@ -89,9 +133,7 @@
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title">添加设备</h5>
-              <button type="button" class="close" data-dismiss="modal">
-                &times;
-              </button>
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
             <div class="modal-body">
               <div class="input-group mb-3">
@@ -130,9 +172,7 @@
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title">日程管理</h5>
-              <button type="button" class="close" data-dismiss="modal">
-                &times;
-              </button>
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
             <div class="modal-body">
               <table class="table table-striped">
@@ -145,7 +185,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="item in sortedSchedule" :key="{id:item.id,code:item.code,time:item.time}">
+                  <tr v-for="item in sortedSchedule" :key="item.time">
                     <td>{{item.id}}</td>
                     <td>{{item.name}}</td>
                     <td>{{item.code}}</td>
@@ -168,9 +208,7 @@
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title">人脸识别中</h5>
-              <button type="button" class="close" data-dismiss="modal">
-                &times;
-              </button>
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
             <div class="modal-body">
               <div class="spinner-grow"></div>
@@ -178,140 +216,178 @@
           </div>
         </div>
       </div>
+
     </template>
+
   </div>
+
 </template>
 
 <script>
-import progressbar from './ProgressBar'
-import device from './Device'
+import progressbar from "./ProgressBar";
+import device from "./Device";
 export default {
   name: "AppIndex",
   data() {
     return {
+      username: this.$route.params.username,
       environmentconsole: false,
       ownerstateChanging: false,
       timeStep: 0,
-      env:{
+      env: {
         temperature: 30,
         humidity: 4,
         time: 720,
-        ownerstate:true
-      },      
-      voiceMessage: '',
-      isVoiceAlert:false,
-      voiceAlertMessage:'',
-      deviceidtoadd:0,
-      devices:[
+        ownerstate: true
+      },
+      voiceMessage: "",
+      isVoiceAlert: false,
+      voiceAlertMessage: "",
+      deviceidtoadd: 0,
+      devices: [
         {
-          id:1,
-          name:'A1',
-          type:'AirConditioner',
-          state:1
+          id: 1,
+          name: "A1",
+          type: "AirConditioner",
+          state: 1
         },
         {
-          id:2,
-          name:'H1',
-          type:'Humidifier',
-          state:1
+          id: 2,
+          name: "H1",
+          type: "Humidifier",
+          state: 1
         },
         {
-          id:3,
-          name:'L2',
-          type:'Light',
-          state:0
+          id: 3,
+          name: "L2",
+          type: "Light",
+          state: 0
         },
         {
-          id:4,
-          name:'C2',
-          type:'Curtain',
-          state:0
+          id: 4,
+          name: "C2",
+          type: "Curtain",
+          state: 0
         },
         {
-          id:5,
-          name:'B2',
-          type:'Box',
-          state:0
+          id: 5,
+          name: "B2",
+          type: "Box",
+          state: 0
         },
         {
-          id:6,
-          name:'T2',
-          type:'TV',
-          state:0
+          id: 6,
+          name: "T2",
+          type: "TV",
+          state: 0
         }
       ],
-      isAlert:false,
-      alertMessage:'',
-      schedule:[
-        {id:1,name:'A1',code:'A_PowerOn_28',time:45},
-        {id:1,name:'A1',code:'A_PowerOn_28',time:55},
-        {id:1,name:'A1',code:'A_PowerOn_28',time:15},
-        {id:6,name:'T1',code:'TPowerOn',time:455}
+      isAlert: false,
+      isErrorAlert: false,
+      alertMessage: "",
+      schedule: [
+        { id: 1, name: "A1", code: "28", time: 45 },
+        { id: 1, name: "A1", code: "28", time: 55 },
+        { id: 1, name: "A1", code: "28", time: 15 },
+        { id: 6, name: "T1", code: "1", time: 455 }
       ]
-    }
+    };
   },
-  computed:{
-    timeStr:function(){
-      let minute = new String(this.env.time%60)
-      if(minute.length==1) minute=(minute=='0'?'00':('0'+minute))
-      return Math.floor(this.env.time/60)+':'+minute
+  computed: {
+    timeStr: function() {
+      let minute = new String(this.env.time % 60);
+      if (minute.length == 1) minute = minute == "0" ? "00" : "0" + minute;
+      return Math.floor(this.env.time / 60) + ":" + minute;
     },
-    sortedSchedule:function(){
-      let [...list] = this.schedule
-      list.sort((x,y)=>{
-        return x.time-y.time
-      })
-      for(let i=0;i<list.length;i++){
-        let t = list[i].time
-        let m = new String(list[i].time%60)
-        if(m.length==1) m = (m=='0'?'00':'0'+m)
-        list[i].time = Math.floor(t/60)+':'+m
+    sortedSchedule: function() {
+      let [...list] = this.schedule;
+      list.sort((x, y) => {
+        return x.time - y.time;
+      });
+      for (let i = 0; i < list.length; i++) {
+        let t = list[i].time;
+        let m = new String(list[i].time % 60);
+        if (m.length == 1) m = m == "0" ? "00" : "0" + m;
+        list[i].time = Math.floor(t / 60) + ":" + m;
       }
-      return list
+      return list;
     }
   },
-  methods:{
+  methods: {
     /**
     发送语音消息
      */
-    sendVoiceMessage(){
-      console.log(this.voiceMessage)
+    sendVoiceMessage() {
+      this.$axios.post("/voice/analyze", {
+        voiceInput:this.voiceMessage,
+        username:this.username
+      }).then(res=>{
+        if(res.succ){
+
+        }else{
+          console.error(res)
+          alertMsg('发送语音失败',true)
+        }
+      })
     },
     /**
     操作设备(核心方法)
      */
-    operate(data){
-      console.log(data)
+    operate(data) {
+      console.log(data);
     },
     /**
      * 更改主人状态
      */
-    changeOwnerState(){
-      this.ownerstateChanging = true
-      if(this.env.ownerstate==false){
-        $('#modal-face').modal('show')
+    changeOwnerState() {
+      this.ownerstateChanging = true;
+      if (this.env.ownerstate == false) {
+        $("#modal-face").modal("show");
         setTimeout(() => {
-          $('#modal-face').modal('hide')
-          this.env.ownerstate=!this.env.ownerstate
-          this.ownerstateChanging=false
-          this.alertMsg('认证成功!')
+          $("#modal-face").modal("hide");
+          this.env.ownerstate = !this.env.ownerstate;
+          this.ownerstateChanging = false;
+          this.alertMsg("认证成功!");
         }, 2500);
-      }else{
+      } else {
         setTimeout(() => {
-          this.env.ownerstate=!this.env.ownerstate
-          this.ownerstateChanging=false
-          this.alertMsg('主人已离开.')
-        }, 2000); 
-      }    
+          this.env.ownerstate = !this.env.ownerstate;
+          this.ownerstateChanging = false;
+          this.alertMsg("主人已离开.");
+        }, 2000);
+      }
     },
-    alertMsg(msg,time=2500){
-      this.isAlert=true
-      this.alertMessage=msg
+    /**
+     * 操作成功后的消息提示
+     */
+    alertMsg(msg, isErrorAlert=false,time = 2500) {
+      this.isErrorAlert = isErrorAlert
+      this.isAlert = true
+      this.alertMessage = msg
       setTimeout(() => {
-        this.isAlert=false;
-      }, time);
+        this.isAlert = false
+      }, time)
+    },
+    /**
+     * 删除设备
+     */
+    deleteDevice(id){
+      let flag = confirm('确认删除该设备吗？')
+      if(flag){
+        this.$axios.post('/deleteDevice',{
+          deviceId:id
+        }).then(res=>{
+          if(res.succ){
+            alertMsg('删除设备成功!')
+          }else{
+            console.error(res)
+            alertMsg('删除失败!',true)
+          }
+        })
+      }
     }
-  },components:{
+  },
+  components: {
     progressbar,
     device
   }
@@ -319,82 +395,81 @@ export default {
 </script>
 
 <style scoped>
+.container-main {
+  padding-top: 1rem;
+}
 
-  .container-main{
-    padding-top: 1rem;
-  }
+.navbar-right {
+  margin-right: 10rem;
+  display: flex;
+  display: -webkit-box;
+  display: -webkit-inline-box;
+}
 
-  .navbar-right{
-    margin-right: 10rem;
-    display: flex;
-    display: -webkit-box;
-    display: -webkit-inline-box;
-  }
+.console-environment {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  max-width: 40rem;
+  margin: auto;
+}
 
-  .console-environment{
-    padding-top: 1rem;
-    padding-bottom: 1rem;
-    max-width: 40rem;
-    margin: auto;
-  }
+.console-environment-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-  .console-environment-header{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+.console-environment .btn-sm {
+  max-height: 1.6rem;
+  font-size: 0.8rem;
+}
 
-  .console-environment .btn-sm{
-    max-height: 1.6rem;
-    font-size: .8rem;
-  }
+.btn-ownerstate {
+  position: absolute;
+  height: 1.5rem;
+  right: 3rem;
+  font-size: 0.7rem;
+}
 
-  .btn-ownerstate{
-    position: absolute;
-    height: 1.5rem;
-    right: 3rem;
-    font-size: .7rem;
-  }
+.container-data {
+  display: flex;
+}
 
-  .container-data{
-    display: flex;
-  }
+.line {
+  margin-top: 0.5rem;
+}
 
-  .line{
-    margin-top: .5rem;
-  }
+.container-bars {
+  padding-left: 1.5rem;
+}
 
-  .container-bars{
-    padding-left: 1.5rem;
-  }
+.container-status {
+  margin-left: 4rem;
+  flex-direction: column;
+}
 
-  .container-status{
-    margin-left: 4rem;
-    flex-direction: column;
-  }
+.line-status {
+  align-items: center;
+  width: fit-content;
+  padding: 0.1rem 0;
+  font-size: 0.9rem;
+}
 
-  .line-status{
-    align-items: center;
-    width: fit-content;
-    padding: .1rem 0;
-    font-size: .9rem;
-  }
+.label-line-status {
+  margin-right: 0.75rem;
+}
 
-  .label-line-status{
-    margin-right: .75rem;
-  }
+.badge-ownerstate {
+  padding: 0.1rem;
+}
 
-  .badge-ownerstate{
-    padding: .1rem;
-  }
-
-  /* devices */
-  .container-devices{
-    margin:auto;
-    display: flex;
-    flex-wrap: wrap;
-    margin-top: 1rem;
-    justify-content: space-around;
-  }
+/* devices */
+.container-devices {
+  margin: auto;
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+  justify-content: space-around;
+}
 </style>
 
