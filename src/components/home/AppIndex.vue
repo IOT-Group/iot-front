@@ -172,6 +172,11 @@
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title">日程管理</h5>
+              <div
+                class="alert alert-success"
+                v-show="isScheduleAlert"
+                style="margin-bottom:0;padding:.3rem 1.25rem;margin:auto"
+              >{{scheduleAlertMessage}}</div>
               <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
             <div class="modal-body">
@@ -185,12 +190,12 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="item in sortedSchedule" :key="item.time">
-                    <td>{{item.id}}</td>
-                    <td>{{item.name}}</td>
-                    <td>{{item.code}}</td>
-                    <td>{{item.time}}</td>
-                  </tr>
+                  <schedule-row
+                    v-for="item in sortedSchedule"
+                    :key="item.time"
+                    :schedule="item"
+                    @deleteSchedule="deleteSchedule"
+                  ></schedule-row>
                 </tbody>
               </table>
             </div>
@@ -216,16 +221,14 @@
           </div>
         </div>
       </div>
-
     </template>
-
   </div>
-
 </template>
 
 <script>
 import progressbar from "./ProgressBar";
 import device from "./Device";
+import scheduleRow from "./ScheduleRow";
 export default {
   name: "AppIndex",
   data() {
@@ -286,11 +289,13 @@ export default {
       isErrorAlert: false,
       alertMessage: "",
       schedule: [
-        { id: 1, name: "A1", code: "28", time: 45 },
-        { id: 1, name: "A1", code: "28", time: 55 },
-        { id: 1, name: "A1", code: "28", time: 15 },
-        { id: 6, name: "T1", code: "1", time: 455 }
-      ]
+        { deviceId: 1, name: "A1", code: "28", time: 45 },
+        { deviceId: 1, name: "A1", code: "28", time: 55 },
+        { deviceId: 1, name: "A1", code: "28", time: 15 },
+        { deviceId: 6, name: "T1", code: "1", time: 455 }
+      ],
+      isScheduleAlert: false,
+      scheduleAlertMessage: ""
     };
   },
   computed: {
@@ -304,12 +309,6 @@ export default {
       list.sort((x, y) => {
         return x.time - y.time;
       });
-      for (let i = 0; i < list.length; i++) {
-        let t = list[i].time;
-        let m = new String(list[i].time % 60);
-        if (m.length == 1) m = m == "0" ? "00" : "0" + m;
-        list[i].time = Math.floor(t / 60) + ":" + m;
-      }
       return list;
     }
   },
@@ -318,17 +317,18 @@ export default {
     发送语音消息
      */
     sendVoiceMessage() {
-      this.$axios.post("/voice/analyze", {
-        voiceInput:this.voiceMessage,
-        username:this.username
-      }).then(res=>{
-        if(res.succ){
-
-        }else{
-          console.error(res)
-          alertMsg('发送语音失败',true)
-        }
-      })
+      this.$axios
+        .post("/voice/analyze", {
+          voiceInput: this.voiceMessage,
+          username: this.username
+        })
+        .then(res => {
+          if (res.succ) {
+          } else {
+            console.error(res);
+            alertMsg("发送语音失败", true);
+          }
+        });
     },
     /**
     操作设备(核心方法)
@@ -360,36 +360,75 @@ export default {
     /**
      * 操作成功后的消息提示
      */
-    alertMsg(msg, isErrorAlert=false,time = 2500) {
-      this.isErrorAlert = isErrorAlert
-      this.isAlert = true
-      this.alertMessage = msg
+    alertMsg(msg, isErrorAlert = false, time = 2500) {
+      this.isErrorAlert = isErrorAlert;
+      this.isAlert = true;
+      this.alertMessage = msg;
       setTimeout(() => {
-        this.isAlert = false
-      }, time)
+        this.isAlert = false;
+      }, time);
     },
     /**
      * 删除设备
      */
-    deleteDevice(id){
-      let flag = confirm('确认删除该设备吗？')
-      if(flag){
-        this.$axios.post('/deleteDevice',{
-          deviceId:id
-        }).then(res=>{
-          if(res.succ){
-            alertMsg('删除设备成功!')
-          }else{
-            console.error(res)
-            alertMsg('删除失败!',true)
-          }
-        })
+    deleteDevice(id) {
+      id = id.id;
+      let flag = confirm("确认删除该设备吗？");
+      if (flag) {
+        console.log(this.devices);
+        this.$axios
+          .post("/deleteDevice", {
+            deviceId: id
+          })
+          .then(res => {
+            if (res.succ) {
+              for (let i = 0; i < this.devices.length; i++) {
+                if (this.devices[i].id == id) {
+                  this.devices.splice(i, 1);
+                  this.alertMsg("删除设备成功!");
+                  break;
+                }
+              }
+            } else {
+              console.error(res);
+              alertMsg("删除失败!", true);
+            }
+          });
       }
+    },
+    /**
+     * 删除日程
+     */
+    deleteSchedule(schedule) {
+      console.log(schedule);
+
+      this.$axios.post("/deleteSchedule", schedule).then(res => {
+        if (res.succ) {
+          for (let i = 0; i < this.schedule.length; i++) {
+            if (
+              this.schedule[i].deviceId == schedule.deviceId &&
+              this.schedule[i].time == schedule.time &&
+              this.schedule[i].code == schedule.code
+            ) {
+              this.isScheduleAlert = true;
+              this.scheduleAlertMessage = "删除成功!";
+              setTimeout(() => {
+                this.isScheduleAlert = false;
+              }, 1200);
+              this.schedule.splice(i, 1);
+              break;
+            }
+          }
+        } else {
+          console.error(res);
+        }
+      });
     }
   },
   components: {
     progressbar,
-    device
+    device,
+    scheduleRow
   }
 };
 </script>
