@@ -7,13 +7,14 @@ Vue.use(Router)
 
 export default new Router({
     mode: 'history',
-    routes: [{
-            path: '/',
+    routes: [
+        {
+            path: '/login',
             name: 'Login',
             component: Login
         },
         {
-            path: '/login',
+            path: '/',
             name: 'Login',
             component: Login
         },

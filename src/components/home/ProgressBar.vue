@@ -10,7 +10,25 @@
         :style="{backgroundColor:color,width:((value-min)/(max-min)*10)+'rem',height:'.45rem'}"
       ></div>
     </div>
-    <div class="detail">{{value}}{{unit}}</div>
+    <div style="display:-webkit-box;position:relative;top:.5rem;">
+      <div class="detail">
+        <input
+          class="form-control"
+          type="text"
+          v-model="value"
+          style="max-width:4rem;max-height:1.8rem;font-size:12px;"
+        />
+        {{unit}}
+      </div>
+      <div
+        class="btn btn-success"
+        style="margin-left:1rem;max-width:6rem;max-height:1.8rem;font-size:12px;"
+        @click="$emit('setEnvironment',{
+      type:setType,
+      ins:value
+    })"
+      >修改</div>
+    </div>
   </div>
 </template>
 
@@ -36,19 +54,25 @@ export default {
     unit: {
       default: ""
     }
-  },computed:{
-    color:function(){
-      let rv = this.value-this.min
-      let rm = this.max-this.min
-      if(rv/rm<0.25){
-        return '#007bff'
-      }else if(rv/rm<0.55){
-        return '#28a745'
-      }else if(rv/rm<0.85){
-        return '#ffc107'
-      }else{
-        return '#dc3545'
+  },
+  computed: {
+    color: function() {
+      let rv = this.value - this.min;
+      let rm = this.max - this.min;
+      if (rv / rm < 0.25) {
+        return "#007bff";
+      } else if (rv / rm < 0.55) {
+        return "#28a745";
+      } else if (rv / rm < 0.85) {
+        return "#ffc107";
+      } else {
+        return "#dc3545";
       }
+    },
+    setType: function() {
+      if (this.label == "温度") return "0";
+      else if (this.label == "湿度") return "1";
+      return "";
     }
   }
 };
