@@ -79,9 +79,9 @@ export default {
   computed: {
     btnCode: function() {
       if (this.type[0] == "A") {
-        return this.stateD == 0 ? this.input : "0";
+        return this.state == 0 ? this.input : "0";
       } else {
-        return this.stateD == 0 ? "1" : "0";
+        return this.state == 0 ? "1" : "0";
       }
     }
   },

@@ -681,7 +681,7 @@ export default {
         "B1",
         "B2"
       ];
-      typeToAdd = types[this.deviceTypeIdToAdd];
+      typeToAdd = types[this.deviceTypeIdToAdd-1];
       // var a = {p:0}
       // var x=a.p
       // for(x=0;x<14;x++){
